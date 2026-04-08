@@ -56,5 +56,3 @@ except KeyboardInterrupt:
     print("\nSequence ended by user.")
     motor_stop()
     stby.off() # Disable driver
-    
-
