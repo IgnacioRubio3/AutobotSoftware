@@ -1,5 +1,4 @@
-from gpiozero import PWMOutputDevice, DigitalOutputDevice, RotaryEncoder
-import readchar
+from gpiozero import PWMOutputDevice, DigitalOutputDevice
 import time
 
 # --- Hardware Setup ---
@@ -16,62 +15,63 @@ pwmb = PWMOutputDevice(13)
 # Common Standby
 stby = DigitalOutputDevice(23)
 
-# Encoders
-encoder_l = RotaryEncoder(16, 19)
-encoder_r = RotaryEncoder(20, 21)
-
-# Logic Variables
-current_speed = 0.0
-increment = 0.1 
-
-def update_motors(speed):
-    """Sets speed for both motors (-1.0 to 1.0)"""
+def drive(left_speed, right_speed):
+    """
+    Core function to set motor speeds.
+    Range: -1.0 (Full Reverse) to 1.0 (Full Forward)
+    """
     stby.on()
     
-    # Motor A Logic
-    if speed > 0:
-        ain1.on(); ain2.off(); pwma.value = speed
-        bin1.on(); bin2.off(); pwmb.value = speed
-    elif speed < 0:
-        ain1.off(); ain2.on(); pwma.value = abs(speed)
-        bin1.off(); bin2.on(); pwmb.value = abs(speed)
+    # Left Motor Logic
+    if left_speed > 0:
+        ain1.on(); ain2.off(); pwma.value = left_speed
+    elif left_speed < 0:
+        ain1.off(); ain2.on(); pwma.value = abs(left_speed)
     else:
         ain1.off(); ain2.off(); pwma.value = 0
+
+    # Right Motor Logic
+    if right_speed > 0:
+        bin1.on(); bin2.off(); pwmb.value = right_speed
+    elif right_speed < 0:
+        bin1.off(); bin2.on(); pwmb.value = abs(right_speed)
+    else:
         bin1.off(); bin2.off(); pwmb.value = 0
 
-print("--- DUAL MOTOR CONTROL ---")
-print("Hold 'W' (Forward), 'S' (Backward), 'Q' (Quit)")
-
 try:
-    while True:
-        # Use readchar for headless terminal compatibility
-        key = readchar.readkey().lower()
+    # 1. ONE MOTOR RUNNING IN BOTH DIRECTIONS
+    print("Requirement 1: Left motor forward then backward")
+    drive(0.5, 0)
+    time.sleep(2)
+    drive(-0.5, 0)
+    time.sleep(2)
+    
+    print("Requirement 1: Right motor forward then backward")
+    drive(0, 0.5)
+    time.sleep(2)
+    drive(0, -0.5)
+    time.sleep(2)
 
-        if key == 'w':
-            current_speed = min(current_speed + increment, 1.0)
-            update_motors(current_speed)
-            print(f"Moving Forward | L: {encoder_l.steps} R: {encoder_r.steps}", end="\r")
-        
-        elif key == 's':
-            current_speed = max(current_speed - increment, -1.0)
-            update_motors(current_speed)
-            print(f"Moving Backward | L: {encoder_l.steps} R: {encoder_r.steps}", end="\r")
-        
-        elif key == 'q':
-            print("\nShutting down...")
-            break
-        
-        else:
-            # Neutral stop if other keys pressed
-            current_speed = 0
-            update_motors(0)
-            print("Motors Stopped.                          ", end="\r")
+    # 2. BOTH RUNNING IN SAME DIRECTION (Forward and Backward)
+    print("Requirement 2: Both motors forward (Straight)")
+    drive(0.6, 0.6)
+    time.sleep(2)
+    
+    print("Requirement 2: Both motors backward (Straight)")
+    drive(-0.6, -0.6)
+    time.sleep(2)
 
-        time.sleep(0.05)
+    # 3. BOTH RUNNING IN OPPOSITE DIRECTIONS (Rotations)
+    print("Requirement 3: Opposite directions (Spinning Left)")
+    drive(-0.5, 0.5)
+    time.sleep(2)
 
-except KeyboardInterrupt:
-    pass
+    print("Requirement 3: Opposite directions (Spinning Right)")
+    drive(0.5, -0.5)
+    time.sleep(2)
+
 finally:
-    update_motors(0)
+    # Always shut down motors at the end
+    drive(0, 0)
     stby.off()
-    print("\nSafety Shutdown Complete.")
+    print("Sequence finished. Motors stopped.")
