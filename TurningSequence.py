@@ -85,50 +85,37 @@ def main() -> None:
         # Motor Control Sequence with Manual Button Triggers
         # =================================================================
         
-        # # Step 1
-        # _drive(0.45, 0.45)
-        # time.sleep(2.10)
-        # _drive(0.0, 0.0)
-
-        # Step 2
-        # s.wait_for_start()
-        # s.run_countdown()
-        # _drive(0.45, 0.45)
-        # time.sleep(1.25)
-        # _drive(0.0, 0.0)
-
-        # # Step 3
-        # s.wait_for_start()
-        # s.run_countdown()
-        # _drive(0.45, 0.0)
-        # time.sleep(1.62)
-        # _drive(0.0, 0.0)                    
-
-        # # Step 4
-        # s.wait_for_start()
-        # s.run_countdown()
-        _drive(0.36, 0.62)
-        time.sleep(2.9)
+        # From 22cm until the front of the car is a few milimiters away 
+        # from the stopline
+        _drive(0.45, 0.45)
+        time.sleep(2.10)
         _drive(0.0, 0.0)
 
+        # From car being before the stop line until the back of the car is in
+        # line with the front of the stop line
         s.wait_for_start()
         s.run_countdown()
-        _drive(0.36, 0.62)
-        time.sleep(2.85)
-        _drive(0.0, 0.0)        
-
-        s.wait_for_start()
-        s.run_countdown()
-        _drive(0.36, 0.62)
-        time.sleep(2.8)
+        _drive(0.45, 0.45)
+        time.sleep(1.25)
         _drive(0.0, 0.0)
 
+        # Right turn sequence: Full 90º turn to the right with the back of 
+        # the car in line with the front of the stop line
+        s.wait_for_start()
+        s.run_countdown()
+        _drive(0.45, 0.0)
+        time.sleep(1.62)
+        _drive(0.0, 0.0)                    
+
+        # Left turn sequence: When the back of the car is in line with the 
+        # front of the stop line
         s.wait_for_start()
         s.run_countdown()
         _drive(0.36, 0.62)
         time.sleep(2.75)
-        _drive(0.0, 0.0)        
-        # log.info("All 4 steps completed successfully!")
+        _drive(0.0, 0.0)  
+
+        log.info("All 4 steps completed successfully!")
 
     finally:
         # Safely shut down motors on completion or exit
