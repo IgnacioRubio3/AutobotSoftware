@@ -108,7 +108,7 @@ def main() -> None:
         s.wait_for_start()
         s.run_countdown()
         _drive(0.36, 0.62)
-        time.sleep(5.20)
+        time.sleep(3.71)
         _drive(0.0, 0.0)
 
         log.info("All 4 steps completed successfully!")
