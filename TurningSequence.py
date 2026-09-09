@@ -87,31 +87,31 @@ def main() -> None:
         
         # Step 1
         _drive(0.45, 0.45)
-        time.sleep(2.26)
+        time.sleep(2.15)
         _drive(0.0, 0.0)
 
-        # Step 2
-        s.wait_for_start()
-        s.run_countdown()
-        _drive(0.45, 0.45)
-        time.sleep(1.263)
-        _drive(0.0, 0.0)
+        # # Step 2
+        # s.wait_for_start()
+        # s.run_countdown()
+        # _drive(0.45, 0.45)
+        # time.sleep(1.263)
+        # _drive(0.0, 0.0)
 
-        # Step 3
-        s.wait_for_start()
-        s.run_countdown()
-        _drive(0.45, 0.0)
-        time.sleep(1.7)
-        _drive(0.0, 0.0)
+        # # Step 3
+        # s.wait_for_start()
+        # s.run_countdown()
+        # _drive(0.45, 0.0)
+        # time.sleep(1.7)
+        # _drive(0.0, 0.0)
 
-        # Step 4
-        s.wait_for_start()
-        s.run_countdown()
-        _drive(0.36, 0.62)
-        time.sleep(3.20)
-        _drive(0.0, 0.0)
+        # # Step 4
+        # s.wait_for_start()
+        # s.run_countdown()
+        # _drive(0.36, 0.62)
+        # time.sleep(3.1)
+        # _drive(0.0, 0.0)
 
-        log.info("All 4 steps completed successfully!")
+        # log.info("All 4 steps completed successfully!")
 
     finally:
         # Safely shut down motors on completion or exit
