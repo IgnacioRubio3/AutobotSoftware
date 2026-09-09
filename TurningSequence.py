@@ -34,12 +34,10 @@ _last_error: float = 0.0
 # =============================================================================
 pi = pigpio.pi()
 
+# sudo pigpiod
 # Pin assignments — match Product Spec GPIO Table 7
 _BUTTON_PIN = 17   # Start button (active-high, pull-down)
 button = Button(_BUTTON_PIN)
-
-# Display update throttle
-_DISPLAY_UPDATE_INTERVAL_S = 1.0   # TM1637 is bit-banged; no need to write > 1 Hz
 
 # Motor A (Left) — TB6612 AIN side
 _ain1 = 24
@@ -85,7 +83,23 @@ def wait_for_button_press(step_num: int) -> None:
     log.info(f"Button pressed! Executing Step {step_num}...")
     time.sleep(0.3)  # Small debounce pause so it doesn't trigger rapidly
 
+def run_countdown(self) -> None:
+    """
+    Display 5-4-3-2-1 countdown, one digit per second.
+    Leaves the display blank at the end, ready for elapsed time.
+    """
+    log.info("System: starting countdown...")
+    for count in range(5, 0, -1):
+        # show() accepts a 4-char string; right-justify the digit
+        self._display.show(f"  {count} ")
+        log.info("System: countdown %d", count)
+        time.sleep(1.0)
+
+    self._display.show("    ")   # blank — pipeline is starting
+    log.info("System: GO")
+
 def main() -> None:
+
     log.info("Starting Navilott Pipeline")
 
     try:
@@ -94,25 +108,29 @@ def main() -> None:
         # =================================================================
         
         # Step 1
-        wait_for_button_press(1)
+        wait_for_button_press()
+        run_countdown()
         _drive(0.45, 0.45)
         time.sleep(3.09)
         _drive(0.0, 0.0)
 
         # Step 2
-        wait_for_button_press(2)
+        wait_for_button_press()
+        run_countdown()
         _drive(0.45, 0.45)
         time.sleep(1.263)
         _drive(0.0, 0.0)
 
         # Step 3
-        wait_for_button_press(3)
+        wait_for_button_press()
+        run_countdown()
         _drive(0.45, 0.0)
         time.sleep(1.98)
         _drive(0.0, 0.0)
 
         # Step 4
-        wait_for_button_press(4)
+        wait_for_button_press()
+        run_countdown()
         _drive(0.36, 0.54)
         time.sleep(5.512)
         _drive(0.0, 0.0)
