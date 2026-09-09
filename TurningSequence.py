@@ -76,12 +76,24 @@ def _drive(left_speed: float, right_speed: float) -> None:
     pi.write(_bin1, 1 if right_speed > 0 else 0)
     pi.write(_bin2, 1 if right_speed < 0 else 0)
 
-def wait_for_button_press(step_num: int) -> None:
-    """Helper function to pause execution until the button is pressed."""
-    log.info(f"--- Ready for Step {step_num}. Press the button to start! ---")
-    button.wait_for_press()
-    log.info(f"Button pressed! Executing Step {step_num}...")
-    time.sleep(0.3)  # Small debounce pause so it doesn't trigger rapidly
+def wait_for_start(self) -> None:
+    """
+    Block until the start button is pressed (GPIO 17 goes high).
+
+    Shows 'rdy' on the display while waiting.
+    Debounces by requiring the pin to stay high for 50 ms.
+    """
+    # TM1637 show_str renders up to 4 chars; 'rdy ' fills all digits
+    self._display.show("rdy ")
+    log.info("System: waiting for start button (GPIO %d)...", _BUTTON_PIN)
+
+    while True:
+        if self._pi.read(_BUTTON_PIN):
+            time.sleep(0.05)                   # debounce hold
+            if self._pi.read(_BUTTON_PIN):     # still high after 50 ms
+                log.info("System: start button pressed.")
+                break
+        time.sleep(0.01)   # 10 ms poll — negligible CPU
 
 def run_countdown(self) -> None:
     """
