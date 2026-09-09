@@ -1,7 +1,8 @@
-from gpiozero import Button
 import pigpio
 import time
 import logging
+
+from MikeBigStuff import wait_for_start, run_countdown
 
 # =============================================================================
 # Logging
@@ -76,84 +77,50 @@ def _drive(left_speed: float, right_speed: float) -> None:
     pi.write(_bin1, 1 if right_speed > 0 else 0)
     pi.write(_bin2, 1 if right_speed < 0 else 0)
 
-def wait_for_start(self) -> None:
-    """
-    Block until the start button is pressed (GPIO 17 goes high).
-
-    Shows 'rdy' on the display while waiting.
-    Debounces by requiring the pin to stay high for 50 ms.
-    """
-    # TM1637 show_str renders up to 4 chars; 'rdy ' fills all digits
-    self._display.show("rdy ")
-    log.info("System: waiting for start button (GPIO %d)...", _BUTTON_PIN)
-
-    while True:
-        if self._pi.read(_BUTTON_PIN):
-            time.sleep(0.05)                   # debounce hold
-            if self._pi.read(_BUTTON_PIN):     # still high after 50 ms
-                log.info("System: start button pressed.")
-                break
-        time.sleep(0.01)   # 10 ms poll — negligible CPU
-
-def run_countdown(self) -> None:
-    """
-    Display 5-4-3-2-1 countdown, one digit per second.
-    Leaves the display blank at the end, ready for elapsed time.
-    """
-    log.info("System: starting countdown...")
-    for count in range(5, 0, -1):
-        # show() accepts a 4-char string; right-justify the digit
-        self._display.show(f"  {count} ")
-        log.info("System: countdown %d", count)
-        time.sleep(1.0)
-
-    self._display.show("    ")   # blank — pipeline is starting
-    log.info("System: GO")
-
 def main() -> None:
 
     log.info("Starting Navilott Pipeline")
 
-    try:
-        # =================================================================
-        # Motor Control Sequence with Manual Button Triggers
-        # =================================================================
-        
-        # Step 1
-        wait_for_button_press()
-        run_countdown()
-        _drive(0.45, 0.45)
-        time.sleep(3.09)
-        _drive(0.0, 0.0)
+    s = System()
+    s.wait_for_start()
+    s.run_countdown()
 
-        # Step 2
-        wait_for_button_press()
-        run_countdown()
-        _drive(0.45, 0.45)
-        time.sleep(1.263)
-        _drive(0.0, 0.0)
+    while True:
+        try:
+            # =================================================================
+            # Motor Control Sequence with Manual Button Triggers
+            # =================================================================
+            
+            # Step 1
+            _drive(0.45, 0.45)
+            time.sleep(3.09)
+            _drive(0.0, 0.0)
 
-        # Step 3
-        wait_for_button_press()
-        run_countdown()
-        _drive(0.45, 0.0)
-        time.sleep(1.98)
-        _drive(0.0, 0.0)
+            # Step 2
+            s.wait_for_start()
+            _drive(0.45, 0.45)
+            time.sleep(1.263)
+            _drive(0.0, 0.0)
 
-        # Step 4
-        wait_for_button_press()
-        run_countdown()
-        _drive(0.36, 0.54)
-        time.sleep(5.512)
-        _drive(0.0, 0.0)
+            # Step 3
+            s.wait_for_start()
+            _drive(0.45, 0.0)
+            time.sleep(1.98)
+            _drive(0.0, 0.0)
 
-        log.info("All 4 steps completed successfully!")
+            # Step 4
+            s.wait_for_start()
+            _drive(0.36, 0.54)
+            time.sleep(5.512)
+            _drive(0.0, 0.0)
 
-    finally:
-        # Safely shut down motors on completion or exit
-        _drive(0.0, 0.0)
-        pi.write(_stby, 0)
-        pi.stop()
+            log.info("All 4 steps completed successfully!")
+
+        finally:
+            # Safely shut down motors on completion or exit
+            _drive(0.0, 0.0)
+            pi.write(_stby, 0)
+            pi.stop()
 
 if __name__ == "__main__":
     main()
