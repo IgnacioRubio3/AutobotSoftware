@@ -93,34 +93,34 @@ def main() -> None:
         # Step 2
         # s.wait_for_start()
         # s.run_countdown()
-        _drive(0.45, 0.45)
-        time.sleep(1.3)
-        _drive(0.0, 0.0)
-
-        s.wait_for_start()
-        s.run_countdown()
-        _drive(0.45, 0.45)
-        time.sleep(1.25)
-        _drive(0.0, 0.0)
-
-        s.wait_for_start()
-        s.run_countdown()
-        _drive(0.45, 0.45)
-        time.sleep(1.2)
-        _drive(0.0, 0.0)
-
-        s.wait_for_start()
-        s.run_countdown()
-        _drive(0.45, 0.45)
-        time.sleep(1.15)
-        _drive(0.0, 0.0)
+        # _drive(0.45, 0.45)
+        # time.sleep(1.25)
+        # _drive(0.0, 0.0)
 
         # # Step 3
         # s.wait_for_start()
         # s.run_countdown()
-        # _drive(0.45, 0.0)
-        # time.sleep(1.7)
-        # _drive(0.0, 0.0)
+        _drive(0.45, 0.0)
+        time.sleep(1.65)
+        _drive(0.0, 0.0)
+
+        s.wait_for_start()
+        s.run_countdown()
+        _drive(0.45, 0.0)
+        time.sleep(1.6)
+        _drive(0.0, 0.0)
+
+        s.wait_for_start()
+        s.run_countdown()
+        _drive(0.45, 0.0)
+        time.sleep(1.55)
+        _drive(0.0, 0.0)
+
+        s.wait_for_start()
+        s.run_countdown()
+        _drive(0.45, 0.0)
+        time.sleep(1.5)
+        _drive(0.0, 0.0)                        
 
         # # Step 4
         # s.wait_for_start()
