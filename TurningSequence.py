@@ -100,35 +100,34 @@ def main() -> None:
         # # Step 3
         # s.wait_for_start()
         # s.run_countdown()
-        _drive(0.45, 0.0)
-        time.sleep(1.65)
-        _drive(0.0, 0.0)
-
-        s.wait_for_start()
-        s.run_countdown()
-        _drive(0.45, 0.0)
-        time.sleep(1.6)
-        _drive(0.0, 0.0)
-
-        s.wait_for_start()
-        s.run_countdown()
-        _drive(0.45, 0.0)
-        time.sleep(1.55)
-        _drive(0.0, 0.0)
-
-        s.wait_for_start()
-        s.run_countdown()
-        _drive(0.45, 0.0)
-        time.sleep(1.5)
-        _drive(0.0, 0.0)                        
+        # _drive(0.45, 0.0)
+        # time.sleep(1.62)
+        # _drive(0.0, 0.0)                    
 
         # # Step 4
         # s.wait_for_start()
         # s.run_countdown()
-        # _drive(0.36, 0.62)
-        # time.sleep(3.1)
-        # _drive(0.0, 0.0)
+        _drive(0.36, 0.62)
+        time.sleep(3.15)
+        _drive(0.0, 0.0)
 
+        s.wait_for_start()
+        s.run_countdown()
+        _drive(0.36, 0.62)
+        time.sleep(3.1)
+        _drive(0.0, 0.0)        
+
+        s.wait_for_start()
+        s.run_countdown()
+        _drive(0.36, 0.62)
+        time.sleep(3.05)
+        _drive(0.0, 0.0)
+
+        s.wait_for_start()
+        s.run_countdown()
+        _drive(0.36, 0.62)
+        time.sleep(3)
+        _drive(0.0, 0.0)        
         # log.info("All 4 steps completed successfully!")
 
     finally:
