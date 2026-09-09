@@ -85,42 +85,41 @@ def main() -> None:
     s.wait_for_start()
     s.run_countdown()
 
-    while True:
-        try:
-            # =================================================================
-            # Motor Control Sequence with Manual Button Triggers
-            # =================================================================
-            
-            # Step 1
-            _drive(0.45, 0.45)
-            time.sleep(3.09)
-            _drive(0.0, 0.0)
+    try:
+        # =================================================================
+        # Motor Control Sequence with Manual Button Triggers
+        # =================================================================
+        
+        # Step 1
+        _drive(0.45, 0.45)
+        time.sleep(3.09)
+        _drive(0.0, 0.0)
 
-            # Step 2
-            s.wait_for_start()
-            _drive(0.45, 0.45)
-            time.sleep(1.263)
-            _drive(0.0, 0.0)
+        # Step 2
+        s.wait_for_start()
+        _drive(0.45, 0.45)
+        time.sleep(1.263)
+        _drive(0.0, 0.0)
 
-            # Step 3
-            s.wait_for_start()
-            _drive(0.45, 0.0)
-            time.sleep(1.98)
-            _drive(0.0, 0.0)
+        # Step 3
+        s.wait_for_start()
+        _drive(0.45, 0.0)
+        time.sleep(1.98)
+        _drive(0.0, 0.0)
 
-            # Step 4
-            s.wait_for_start()
-            _drive(0.36, 0.54)
-            time.sleep(5.512)
-            _drive(0.0, 0.0)
+        # Step 4
+        s.wait_for_start()
+        _drive(0.36, 0.54)
+        time.sleep(5.512)
+        _drive(0.0, 0.0)
 
-            log.info("All 4 steps completed successfully!")
+        log.info("All 4 steps completed successfully!")
 
-        finally:
-            # Safely shut down motors on completion or exit
-            _drive(0.0, 0.0)
-            pi.write(_stby, 0)
-            pi.stop()
+    finally:
+        # Safely shut down motors on completion or exit
+        _drive(0.0, 0.0)
+        pi.write(_stby, 0)
+        pi.stop()
 
 if __name__ == "__main__":
     main()
