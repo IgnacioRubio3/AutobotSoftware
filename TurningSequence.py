@@ -87,7 +87,19 @@ def main() -> None:
         
         # Step 1
         _drive(0.45, 0.45)
+        time.sleep(2.20)
+        _drive(0.0, 0.0)
+
+        s.wait_for_start()
+        s.run_countdown()
+        _drive(0.45, 0.45)
         time.sleep(2.15)
+        _drive(0.0, 0.0)
+
+        s.wait_for_start()
+        s.run_countdown()
+        _drive(0.45, 0.45)
+        time.sleep(2.10)
         _drive(0.0, 0.0)
 
         # # Step 2
