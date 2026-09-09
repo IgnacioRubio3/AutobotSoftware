@@ -2,7 +2,7 @@ import pigpio
 import time
 import logging
 
-from MikeBigStuff import wait_for_start, run_countdown
+from MikeBigStuff import System
 
 # =============================================================================
 # Logging
@@ -34,11 +34,6 @@ _last_error: float = 0.0
 # Hardware Setup
 # =============================================================================
 pi = pigpio.pi()
-
-# sudo pigpiod
-# Pin assignments — match Product Spec GPIO Table 7
-_BUTTON_PIN = 17   # Start button (active-high, pull-down)
-button = Button(_BUTTON_PIN)
 
 # Motor A (Left) — TB6612 AIN side
 _ain1 = 24
@@ -78,10 +73,10 @@ def _drive(left_speed: float, right_speed: float) -> None:
     pi.write(_bin2, 1 if right_speed < 0 else 0)
 
 def main() -> None:
-
     log.info("Starting Navilott Pipeline")
 
     s = System()
+
     s.wait_for_start()
     s.run_countdown()
 
