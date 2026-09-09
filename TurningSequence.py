@@ -92,18 +92,21 @@ def main() -> None:
 
         # Step 2
         s.wait_for_start()
+        s.run_countdown()
         _drive(0.45, 0.45)
         time.sleep(1.263)
         _drive(0.0, 0.0)
 
         # Step 3
         s.wait_for_start()
+        s.run_countdown()
         _drive(0.45, 0.0)
         time.sleep(1.98)
         _drive(0.0, 0.0)
 
         # Step 4
         s.wait_for_start()
+        s.run_countdown()
         _drive(0.36, 0.54)
         time.sleep(5.512)
         _drive(0.0, 0.0)

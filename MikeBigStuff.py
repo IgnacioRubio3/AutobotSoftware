@@ -116,7 +116,7 @@ class System:
         Leaves the display blank at the end, ready for elapsed time.
         """
         log.info("System: starting countdown...")
-        for count in range(5, 0, -1):
+        for count in range(3, 0, -1):
             # show() accepts a 4-char string; right-justify the digit
             self._display.show(f"  {count} ")
             log.info("System: countdown %d", count)
