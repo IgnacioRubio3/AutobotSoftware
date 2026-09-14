@@ -2,7 +2,7 @@ import pigpio
 import time
 import logging
 
-from MikeBigStuff import System
+from System import System
 
 # =============================================================================
 # Logging

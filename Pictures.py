@@ -2,7 +2,7 @@ import os
 import time
 import logging
 import cv2
-from MikeBigStuff import System
+from System import System
 
 # =============================================================================
 # Setup & Configuration
