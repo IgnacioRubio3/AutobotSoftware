@@ -38,6 +38,8 @@ def drive(left_speed, right_speed):
     else:
         bin1.off(); bin2.off(); pwmb.value = 0
 
+    right_speed=-right_speed    
+
 try:
     # 1. ONE MOTOR RUNNING IN BOTH DIRECTIONS
     print("Requirement 1: Left motor forward then backward")
