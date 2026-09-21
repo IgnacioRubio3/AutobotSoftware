@@ -32,12 +32,11 @@ def drive(left_speed, right_speed):
 
     # Right Motor Logic
     if right_speed > 0:
-        bin1.on(); bin2.off(); pwmb.value = -right_speed
-    elif right_speed < 0:
         bin1.off(); bin2.on(); pwmb.value = right_speed
+    elif right_speed < 0:
+        bin1.on(); bin2.off(); pwmb.value = abs(right_speed)
     else:
-        bin1.off(); bin2.off(); pwmb.value = 0
-
+        bin1.off(); bin2.off(); pwmb.value = 0    
 
 try:
     # 1. ONE MOTOR RUNNING IN BOTH DIRECTIONS
