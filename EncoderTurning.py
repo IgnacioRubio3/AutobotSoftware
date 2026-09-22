@@ -1,8 +1,9 @@
 """
-Combined_Turning_Sequence.py
+EncoderTurning.py
 
 Integrates EncoderReader with closed-loop motor turning sequences.
 Uses proportional encoder feedback to synchronize motor speeds and drive straight.
+Logs exact timestamps of button presses and step durations.
 """
 
 import math
@@ -257,30 +258,63 @@ def main() -> None:
     encoders = EncoderReader(pi)
     system = System()
 
+    # Track timing statistics for each step
+    timing_records = []
+    run_start_time = time.perf_counter()
+
+    def run_step(step_name: str, drive_fn, **kwargs) -> None:
+        log.info(f"Waiting for button press for {step_name}...")
+        system.wait_for_start()
+        btn_press_time = time.perf_counter()
+        
+        system.run_countdown()
+        step_start_time = time.perf_counter()
+        
+        log.info(f"Executing {step_name}...")
+        drive_fn(pi, encoders, **kwargs)
+        step_end_time = time.perf_counter()
+
+        timing_records.append({
+            "step": step_name,
+            "btn_press_rel": btn_press_time - run_start_time,
+            "btn_press_time": time.strftime("%H:%M:%S", time.localtime()),
+            "execution_duration": step_end_time - step_start_time,
+        })
+
     try:
         # Step 1: Closed-loop straight approach to stop line
-        system.wait_for_start()
-        system.run_countdown()
-        log.info("Step 1: Closed-loop straight approach to stop line...")
-        drive_straight_closed_loop(pi, encoders, base_speed=0.45, duration=2.10)
+        run_step(
+            "Step 1: Straight approach to stop line",
+            drive_straight_closed_loop,
+            base_speed=0.45,
+            duration=2.10,
+        )
 
         # Step 2: Closed-loop straight cross stop line
-        system.wait_for_start()
-        system.run_countdown()
-        log.info("Step 2: Closed-loop straight crossing stop line...")
-        drive_straight_closed_loop(pi, encoders, base_speed=0.45, duration=1.25)
+        run_step(
+            "Step 2: Straight crossing stop line",
+            drive_straight_closed_loop,
+            base_speed=0.45,
+            duration=1.25,
+        )
 
-        # Step 3: Right turn sequence
-        system.wait_for_start()
-        system.run_countdown()
-        log.info("Step 3: Executing Right Turn...")
-        drive_differential_for_duration(pi, encoders, left_speed=0.45, right_speed=0.0, duration=1.62)
+        # Step 3: Right turn sequence (Left motor moves faster than Right motor)
+        run_step(
+            "Step 3: Right Turn",
+            drive_differential_for_duration,
+            left_speed=0.55,
+            right_speed=0.20,
+            duration=1.62,
+        )
 
-        # Step 4: Left turn sequence
-        system.wait_for_start()
-        system.run_countdown()
-        log.info("Step 4: Executing Left Turn...")
-        drive_differential_for_duration(pi, encoders, left_speed=0.36, right_speed=0.62, duration=2.75)
+        # Step 4: Left turn sequence (Right motor moves faster than Left motor, wide arc)
+        run_step(
+            "Step 4: Wide Left Turn",
+            drive_differential_for_duration,
+            left_speed=0.35,
+            right_speed=0.60,
+            duration=2.50,
+        )
 
         log.info("All 4 steps completed successfully!")
 
@@ -289,6 +323,16 @@ def main() -> None:
         pi.write(_stby, 0)
         encoders.cancel()
         pi.stop()
+        
+        # Output timing summary table
+        log.info("================ TIMING SUMMARY ================")
+        for record in timing_records:
+            log.info(
+                f"{record['step']} | Button Pressed: {record['btn_press_time']} "
+                f"(+{record['btn_press_rel']:.2f}s into run) | "
+                f"Drive Duration: {record['execution_duration']:.2f}s"
+            )
+        log.info("================================================")
         log.info("Cleanup complete.")
 
 
