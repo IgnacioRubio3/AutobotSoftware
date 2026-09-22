@@ -1,5 +1,5 @@
 """
-Combined_Turning_Sequence.py
+Encoders-TurningSequence.py
 
 Integrates EncoderReader with open-loop and closed-loop motor turning sequences.
 Allows driving fixed distances/angles based on encoder count targets instead of fixed time delays.
@@ -115,7 +115,7 @@ class EncoderReader:
             right_cps=r_cps,
         )
 
-    def reset((self) -> None:
+    def reset(self) -> None:
         """Reset internal encoder count offsets to zero."""
         self._left_pos = 0
         self._right_pos = 0
