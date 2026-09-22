@@ -1,9 +1,8 @@
 """
 Combined_Turning_Sequence.py
 
-Integrates EncoderReader with closed-loop motor control.
-Uses proportional encoder feedback to match motor speeds and drive straight, 
-and supports driving to target encoder distances.
+Integrates EncoderReader with closed-loop motor turning sequences.
+Uses proportional encoder feedback to synchronize motor speeds and drive straight.
 """
 
 import math
@@ -92,10 +91,11 @@ class EncoderReader:
             self._right_c2_state = level
 
         if gpio == self.RIGHT_C1 and level == 1:
+            # Direction logic inverted for right motor mounting orientation
             if self._right_c2_state == 0:
-                self._right_pos += 1
-            else:
                 self._right_pos -= 1
+            else:
+                self._right_pos += 1
 
     def snapshot(self) -> EncoderFrame:
         """Atomically read current counts and compute counts per second."""
@@ -178,14 +178,10 @@ def drive_straight_closed_loop(
     encoders: EncoderReader,
     base_speed: float,
     duration: float,
-    kp: float = 0.005,
+    kp: float = 0.003,
 ) -> None:
     """
     Drives forward using a Proportional (P) controller to synchronize left and right speeds.
-    
-    :param base_speed: Base driving speed (0.0 to 1.0)
-    :param duration: Time to drive in seconds
-    :param kp: Proportional correction gain (adjust based on motor response)
     """
     encoders.reset()
     start_time = time.perf_counter()
@@ -193,13 +189,13 @@ def drive_straight_closed_loop(
     while (time.perf_counter() - start_time) < duration:
         frame = encoders.snapshot()
 
-        # Calculate error (difference in pulse counts between motors)
+        # Calculate error (difference in pulse counts between left and right)
         error = frame.left_count - frame.right_count
 
         # Compute speed correction
         correction = error * kp
 
-        # Adjust speed: slow down the leading motor, speed up the lagging one
+        # Adjust motor outputs to keep heading straight
         left_cmd = max(0.0, min(1.0, base_speed - correction))
         right_cmd = max(0.0, min(1.0, base_speed + correction))
 
@@ -223,7 +219,7 @@ def drive_differential_for_duration(
     duration: float,
 ) -> None:
     """
-    Open-loop driver for turning maneuvers (different speeds on left and right).
+    Open-loop driver for turning maneuvers (differential speeds).
     Logs encoder pulse feedback during execution.
     """
     encoders.reset()
@@ -239,45 +235,6 @@ def drive_differential_for_duration(
             f"R: {frame.right_count} ({frame.right_cps:.1f} cps)"
         )
         time.sleep(0.05)
-
-    drive(pi, 0.0, 0.0)
-
-
-def drive_target_ticks(
-    pi: pigpio.pi,
-    encoders: EncoderReader,
-    target_ticks: int,
-    base_speed: float = 0.45,
-    kp: float = 0.005,
-    timeout: float = 5.0,
-) -> None:
-    """
-    Drives straight using feedback control until the target average encoder count is reached.
-    """
-    encoders.reset()
-    start_time = time.perf_counter()
-
-    while (time.perf_counter() - start_time) < timeout:
-        frame = encoders.snapshot()
-        avg_ticks = (abs(frame.left_count) + abs(frame.right_count)) / 2.0
-
-        if avg_ticks >= target_ticks:
-            log.info(f"Target reached! Avg Ticks: {avg_ticks:.1f} / {target_ticks}")
-            break
-
-        error = frame.left_count - frame.right_count
-        correction = error * kp
-
-        left_cmd = max(0.0, min(1.0, base_speed - correction))
-        right_cmd = max(0.0, min(1.0, base_speed + correction))
-
-        drive(pi, left_cmd, right_cmd)
-
-        log.info(
-            f"Target Drive | Avg: {avg_ticks:.1f}/{target_ticks} | "
-            f"Counts (L/R): {frame.left_count}/{frame.right_count}"
-        )
-        time.sleep(0.02)
 
     drive(pi, 0.0, 0.0)
 
@@ -298,25 +255,25 @@ def main() -> None:
     system = System()
 
     try:
-        # Step 1: Closed-loop straight approach to stop line (22cm approach window)
+        # Step 1: Closed-loop straight approach to stop line
         system.wait_for_start()
         system.run_countdown()
         log.info("Step 1: Closed-loop straight approach to stop line...")
-        drive_straight_closed_loop(pi, encoders, base_speed=0.45, duration=2.10, kp=0.005)
+        drive_straight_closed_loop(pi, encoders, base_speed=0.45, duration=2.10)
 
         # Step 2: Closed-loop straight cross stop line
         system.wait_for_start()
         system.run_countdown()
         log.info("Step 2: Closed-loop straight crossing stop line...")
-        drive_straight_closed_loop(pi, encoders, base_speed=0.45, duration=1.25, kp=0.005)
+        drive_straight_closed_loop(pi, encoders, base_speed=0.45, duration=1.25)
 
-        # Step 3: Right turn sequence (differential speeds)
+        # Step 3: Right turn sequence
         system.wait_for_start()
         system.run_countdown()
         log.info("Step 3: Executing Right Turn...")
         drive_differential_for_duration(pi, encoders, left_speed=0.45, right_speed=0.0, duration=1.62)
 
-        # Step 4: Left turn sequence (differential speeds)
+        # Step 4: Left turn sequence
         system.wait_for_start()
         system.run_countdown()
         log.info("Step 4: Executing Left Turn...")
