@@ -179,9 +179,11 @@ def drive_straight_closed_loop(
     base_speed: float,
     duration: float,
     kp: float = 0.003,
+    min_speed: float = 0.25,   # Minimum voltage required to keep motor turning
+    max_corr: float = 0.15,    # Limit maximum correction per loop iteration
 ) -> None:
     """
-    Drives forward using a Proportional (P) controller to synchronize left and right speeds.
+    Drives forward using a P controller with speed clamping and deadband handling.
     """
     encoders.reset()
     start_time = time.perf_counter()
@@ -189,15 +191,16 @@ def drive_straight_closed_loop(
     while (time.perf_counter() - start_time) < duration:
         frame = encoders.snapshot()
 
-        # Calculate error (difference in pulse counts between left and right)
+        # Calculate difference (error)
         error = frame.left_count - frame.right_count
 
-        # Compute speed correction
+        # Compute and clamp speed correction
         correction = error * kp
+        correction = max(-max_corr, min(max_corr, correction))
 
-        # Adjust motor outputs to keep heading straight
-        left_cmd = max(0.0, min(1.0, base_speed - correction))
-        right_cmd = max(0.0, min(1.0, base_speed + correction))
+        # Apply corrections with speed safety floors
+        left_cmd = max(min_speed, min(1.0, base_speed - correction))
+        right_cmd = max(min_speed, min(1.0, base_speed + correction))
 
         drive(pi, left_cmd, right_cmd)
 
