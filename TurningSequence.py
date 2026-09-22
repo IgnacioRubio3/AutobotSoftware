@@ -57,7 +57,6 @@ def _drive(left_speed: float, right_speed: float) -> None:
     Drive the robot with specified left and right motor speeds 
     using the TB6612 motor driver.
     """
-    right_speed = -right_speed  # invert if right motor
     pi.write(_stby, 1)
 
     # Left
