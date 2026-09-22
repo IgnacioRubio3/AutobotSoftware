@@ -1,3 +1,10 @@
+"""
+TurningSequence.py
+
+Sequences for turning right and left, as well as two timers for 
+stop line proximity and stop line crossing.
+"""
+
 import pigpio
 import time
 import logging
@@ -50,6 +57,7 @@ pi.set_mode(_ain1, pigpio.OUTPUT)
 pi.set_mode(_ain2, pigpio.OUTPUT)
 pi.set_mode(_bin1, pigpio.OUTPUT)
 pi.set_mode(_bin2, pigpio.OUTPUT)
+
 pi.set_mode(_stby, pigpio.OUTPUT)
 
 def _drive(left_speed: float, right_speed: float) -> None:

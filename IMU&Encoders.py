@@ -1,5 +1,5 @@
 """
-telemetry.py
+IMU&Encoders.py
 
 Combined IMU background accumulator and Dual N20 Encoder tracking 
 for the Navilott pipeline using pigpio and Adafruit MPU-6050.
