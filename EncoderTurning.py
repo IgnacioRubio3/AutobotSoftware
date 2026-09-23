@@ -180,17 +180,13 @@ def drive_straight_closed_loop(
     encoders: EncoderReader,
     base_speed: float,
     duration: float,
-    kp: float = 0.0015,       # Tuned down slightly from 0.003 for smoother response
-    min_speed: float = 0.25,   # Minimum voltage required to keep motor turning
-    max_corr: float = 0.15,    # Limit maximum correction per loop iteration
+    kp: float = 0.0015,
+    min_speed: float = 0.25,
+    max_corr: float = 0.15,
 ) -> None:
     """
-    Drives forward using a proportional feedback controller with corrected polarity.
-    
-    Sign Convention:
-      error = left_count - right_count
-      - If error > 0: Left is ahead -> Slow down Left (+corr), Speed up Right (-corr)
-      - If error < 0: Right is ahead -> Speed up Left (-corr), Slow down Right (+corr)
+    Drives forward using proportional feedback control.
+    Corrected for physical motor-to-encoder mapping.
     """
     encoders.reset()
     start_time = time.perf_counter()
@@ -198,19 +194,19 @@ def drive_straight_closed_loop(
     while (time.perf_counter() - start_time) < duration:
         frame = encoders.snapshot()
 
-        # Calculate difference (error = Left - Right)
+        # Error > 0 means Left encoder is counting faster than Right encoder
         error = frame.left_count - frame.right_count
 
-        # Compute and clamp proportional speed correction
         correction = error * kp
         correction = max(-max_corr, min(max_corr, correction))
 
-        # --- SIGN FIX APPLIED HERE ---
-        # When error < 0 (Right ahead), correction is negative:
-        # left_cmd  = base_speed - correction -> base_speed - (-corr) -> INCREASES Left
-        # right_cmd = base_speed + correction -> base_speed + (-corr) -> DECREASES Right
-        left_cmd = max(min_speed, min(1.0, base_speed - correction))
-        right_cmd = max(min_speed, min(1.0, base_speed + correction))
+        # SWAPPED SIGNS:
+        # If error > 0 (Left ahead):
+        #   correction > 0
+        #   left_cmd  = base_speed + correction  (Increases speed if polarity was inverted)
+        #   right_cmd = base_speed - correction  (Decreases speed if polarity was inverted)
+        left_cmd = max(min_speed, min(1.0, base_speed + correction))
+        right_cmd = max(min_speed, min(1.0, base_speed - correction))
 
         drive(pi, left_cmd, right_cmd)
 
@@ -219,7 +215,7 @@ def drive_straight_closed_loop(
             f"Counts (L/R): {frame.left_count}/{frame.right_count} | "
             f"Error: {error:+d} | Speeds (L/R): {left_cmd:.3f}/{right_cmd:.3f}"
         )
-        time.sleep(0.02)  # 50 Hz control loop
+        time.sleep(0.02)
 
     drive(pi, 0.0, 0.0)
 
