@@ -92,7 +92,6 @@ class EncoderReader:
             self._right_c2_state = level
 
         if gpio == self.RIGHT_C1 and level == 1:
-            # Direction logic inverted for right motor mounting orientation
             if self._right_c2_state == 0:
                 self._right_pos -= 1
             else:
@@ -155,17 +154,16 @@ def init_motors(pi: pigpio.pi) -> None:
 def drive(pi: pigpio.pi, left_speed: float, right_speed: float) -> None:
     """
     Drive the robot with specified left and right motor speeds (-1.0 to 1.0).
-    Note: Direction control pin logic is inverted for both motors.
     """
     pi.write(_stby, 1)
 
-    # Left Motor (Direction inverted)
+    # Left Motor
     spd_l = int(max(0.0, min(1.0, abs(left_speed))) * 1000000)
     pi.hardware_PWM(_pwma, 1000, spd_l)
     pi.write(_ain1, 1 if left_speed > 0 else 0)
     pi.write(_ain2, 1 if left_speed < 0 else 0)
 
-    # Right Motor (Direction inverted)
+    # Right Motor
     spd_r = int(max(0.0, min(1.0, abs(right_speed))) * 1000000)
     pi.hardware_PWM(_pwmb, 1000, spd_r)
     pi.write(_bin1, 1 if right_speed < 0 else 0)
@@ -185,8 +183,7 @@ def drive_straight_closed_loop(
     max_corr: float = 0.15,
 ) -> None:
     """
-    Drives forward using proportional feedback control.
-    Corrected for physical motor-to-encoder mapping.
+    Drives forward using a proportional feedback controller.
     """
     encoders.reset()
     start_time = time.perf_counter()
@@ -194,17 +191,14 @@ def drive_straight_closed_loop(
     while (time.perf_counter() - start_time) < duration:
         frame = encoders.snapshot()
 
-        # Error > 0 means Left encoder is counting faster than Right encoder
+        # Calculate difference (error = Left - Right)
         error = frame.left_count - frame.right_count
 
+        # Compute and clamp proportional speed correction
         correction = error * kp
         correction = max(-max_corr, min(max_corr, correction))
 
-        # SWAPPED SIGNS:
-        # If error > 0 (Left ahead):
-        #   correction > 0
-        #   left_cmd  = base_speed + correction  (Increases speed if polarity was inverted)
-        #   right_cmd = base_speed - correction  (Decreases speed if polarity was inverted)
+        # Adjust speeds to maintain straight line
         left_cmd = max(min_speed, min(1.0, base_speed + correction))
         right_cmd = max(min_speed, min(1.0, base_speed - correction))
 
@@ -263,7 +257,6 @@ def main() -> None:
     encoders = EncoderReader(pi)
     system = System()
 
-    # Track timing statistics for each step
     timing_records = []
     run_start_time = time.perf_counter()
 
@@ -288,39 +281,39 @@ def main() -> None:
 
     try:
         # Step 1: Closed-loop straight approach to stop line
-        run_step(
-            "Step 1: Straight approach to stop line",
-            drive_straight_closed_loop,
-            base_speed=0.45,
-            duration=2.10,
-            kp=0.0015,
-        )
+        # run_step(
+        #     "Step 1: Straight approach to stop line",
+        #     drive_straight_closed_loop,
+        #     base_speed=0.45,
+        #     duration=2.10,
+        #     kp=0.0015,
+        # )
 
-        # Step 2: Closed-loop straight cross stop line
-        run_step(
-            "Step 2: Straight crossing stop line",
-            drive_straight_closed_loop,
-            base_speed=0.45,
-            duration=1.25,
-            kp=0.0015,
-        )
+        # # Step 2: Closed-loop straight cross stop line
+        # run_step(
+        #     "Step 2: Straight crossing stop line",
+        #     drive_straight_closed_loop,
+        #     base_speed=0.45,
+        #     duration=1.25,
+        #     kp=0.0015,
+        # )
 
-        # Step 3: Left Turn (Right motor moves faster than Left motor)
+        # Step 3: Wide Left Turn (Right motor moves faster than Left motor)
         run_step(
-            "Step 3: Left Turn",
+            "Step 3: Wide Left Turn",
             drive_differential_for_duration,
             left_speed=0.20,
             right_speed=0.55,
             duration=1.62,
         )
 
-        # Step 4: Wide Right Turn (Left motor moves faster than Right motor, wide arc)
+        # Step 4: 90° Right Turn (Left motor at 0.45, Right motor at 0.0)
         run_step(
-            "Step 4: Wide Right Turn",
+            "Step 4: 90-Degree Right Turn",
             drive_differential_for_duration,
-            left_speed=0.60,
-            right_speed=0.35,
-            duration=2.50,
+            left_speed=0.45,
+            right_speed=0.00,
+            duration=1.80,  # Adjust duration as needed for exact 90-degree alignment
         )
 
         log.info("All 4 steps completed successfully!")
@@ -331,7 +324,6 @@ def main() -> None:
         encoders.cancel()
         pi.stop()
         
-        # Output timing summary table
         log.info("================ TIMING SUMMARY ================")
         for record in timing_records:
             log.info(
