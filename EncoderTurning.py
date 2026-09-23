@@ -180,12 +180,17 @@ def drive_straight_closed_loop(
     encoders: EncoderReader,
     base_speed: float,
     duration: float,
-    kp: float = 0.003,
+    kp: float = 0.0015,       # Tuned down slightly from 0.003 for smoother response
     min_speed: float = 0.25,   # Minimum voltage required to keep motor turning
     max_corr: float = 0.15,    # Limit maximum correction per loop iteration
 ) -> None:
     """
-    Drives forward using a P controller with speed clamping and deadband handling.
+    Drives forward using a proportional feedback controller with corrected polarity.
+    
+    Sign Convention:
+      error = left_count - right_count
+      - If error > 0: Left is ahead -> Slow down Left (+corr), Speed up Right (-corr)
+      - If error < 0: Right is ahead -> Speed up Left (-corr), Slow down Right (+corr)
     """
     encoders.reset()
     start_time = time.perf_counter()
@@ -193,14 +198,17 @@ def drive_straight_closed_loop(
     while (time.perf_counter() - start_time) < duration:
         frame = encoders.snapshot()
 
-        # Calculate difference (error)
+        # Calculate difference (error = Left - Right)
         error = frame.left_count - frame.right_count
 
-        # Compute and clamp speed correction
+        # Compute and clamp proportional speed correction
         correction = error * kp
         correction = max(-max_corr, min(max_corr, correction))
 
-        # Apply corrections with speed safety floors
+        # --- SIGN FIX APPLIED HERE ---
+        # When error < 0 (Right ahead), correction is negative:
+        # left_cmd  = base_speed - correction -> base_speed - (-corr) -> INCREASES Left
+        # right_cmd = base_speed + correction -> base_speed + (-corr) -> DECREASES Right
         left_cmd = max(min_speed, min(1.0, base_speed - correction))
         right_cmd = max(min_speed, min(1.0, base_speed + correction))
 
@@ -289,6 +297,7 @@ def main() -> None:
             drive_straight_closed_loop,
             base_speed=0.45,
             duration=2.10,
+            kp=0.0015,
         )
 
         # Step 2: Closed-loop straight cross stop line
@@ -297,6 +306,7 @@ def main() -> None:
             drive_straight_closed_loop,
             base_speed=0.45,
             duration=1.25,
+            kp=0.0015,
         )
 
         # Step 3: Left Turn (Right motor moves faster than Left motor)
