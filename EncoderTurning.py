@@ -280,58 +280,32 @@ def main() -> None:
         })
 
     try:
-        # Step 1: Closed-loop straight approach to stop line
-        # run_step(
-        #     "Step 1: Straight approach to stop line",
-        #     drive_straight_closed_loop,
-        #     base_speed=0.45,
-        #     duration=2.10,
-        #     kp=0.0015,
-        # )
-
-        # # Step 2: Closed-loop straight cross stop line
-        # run_step(
-        #     "Step 2: Straight crossing stop line",
-        #     drive_straight_closed_loop,
-        #     base_speed=0.45,
-        #     duration=1.25,
-        #     kp=0.0015,
-        # )
-
-        # Step 3: Wide Left Turn (Right motor moves faster than Left motor)
-        # run_step(
-        #     "Step 3: Wide Left Turn3",
-        #     drive_differential_for_duration,
-        #     left_speed=0.39,
-        #     right_speed=0.60,
-        #     duration=2.90,
-        # )                 
-
-        # # Step 4: 90° Right Turn (Left motor at 0.45, Right motor at 0.0)
+        # Step 1: Straight approach
         run_step(
-            "Step 4: 90-Degree Right Turn1",
-            drive_differential_for_duration,
-            left_speed=0.45,
-            right_speed=0.00,
-            duration=1.42, 
+            "Step 1: Straight approach to stop line",
+            drive_straight_closed_loop,
+            base_speed=0.45,
+            duration=2.10,
+            kp=0.0015,
         )
 
+        # Step 2: Wide Left Turn (Right motor moves faster than Left motor)
         run_step(
-            "Step 4: 90-Degree Right Turn2",
+            "Step 3: Wide Left Turn3",
+            drive_differential_for_duration,
+            left_speed=0.39,
+            right_speed=0.60,
+            duration=2.90,
+        )                 
+
+        # # Step 3: 90° Right Turn (Left motor at 0.45, Right motor at 0.0)
+        run_step(
+            "Step 4: 90-Degree Right Turn",
             drive_differential_for_duration,
             left_speed=0.45,
             right_speed=0.00,
             duration=1.45, 
         )
-
-        run_step(
-            "Step 4: 90-Degree Right Turn3",
-            drive_differential_for_duration,
-            left_speed=0.45,
-            right_speed=0.00,
-            duration=1.47, 
-        )
-
 
         log.info("All 4 steps completed successfully!")
 
