@@ -299,39 +299,39 @@ def main() -> None:
         # )
 
         # Step 3: Wide Left Turn (Right motor moves faster than Left motor)
-
-        run_step(
-            "Step 3: Wide Left Turn3",
-            drive_differential_for_duration,
-            left_speed=0.39,
-            right_speed=0.60,
-            duration=3.00,
-        ) 
-
-        run_step(
-            "Step 3: Wide Left Turn3",
-            drive_differential_for_duration,
-            left_speed=0.39,
-            right_speed=0.60,
-            duration=2.95,
-        )    
-
-        run_step(
-            "Step 3: Wide Left Turn3",
-            drive_differential_for_duration,
-            left_speed=0.39,
-            right_speed=0.60,
-            duration=2.90,
-        )                 
+        # run_step(
+        #     "Step 3: Wide Left Turn3",
+        #     drive_differential_for_duration,
+        #     left_speed=0.39,
+        #     right_speed=0.60,
+        #     duration=2.90,
+        # )                 
 
         # # Step 4: 90° Right Turn (Left motor at 0.45, Right motor at 0.0)
-        # run_step(
-        #     "Step 4: 90-Degree Right Turn",
-        #     drive_differential_for_duration,
-        #     left_speed=0.45,
-        #     right_speed=0.00,
-        #     duration=1.80,  # Adjust duration as needed for exact 90-degree alignment
-        # )
+        run_step(
+            "Step 4: 90-Degree Right Turn1",
+            drive_differential_for_duration,
+            left_speed=0.45,
+            right_speed=0.00,
+            duration=1.80, 
+        )
+
+        run_step(
+            "Step 4: 90-Degree Right Turn2",
+            drive_differential_for_duration,
+            left_speed=0.45,
+            right_speed=0.00,
+            duration=2.00, 
+        )
+
+        run_step(
+            "Step 4: 90-Degree Right Turn3",
+            drive_differential_for_duration,
+            left_speed=0.45,
+            right_speed=0.00,
+            duration=1.30, 
+        )
+
 
         log.info("All 4 steps completed successfully!")
 
