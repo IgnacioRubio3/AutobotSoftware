@@ -300,21 +300,45 @@ def main() -> None:
 
         # Step 3: Wide Left Turn (Right motor moves faster than Left motor)
         run_step(
-            "Step 3: Wide Left Turn",
+            "Step 3: Wide Left Turn1",
             drive_differential_for_duration,
-            left_speed=0.20,
-            right_speed=0.55,
+            left_speed=0.25,
+            right_speed=0.60,
             duration=1.62,
         )
 
-        # Step 4: 90° Right Turn (Left motor at 0.45, Right motor at 0.0)
         run_step(
-            "Step 4: 90-Degree Right Turn",
+            "Step 3: Wide Left Turn2",
             drive_differential_for_duration,
-            left_speed=0.45,
-            right_speed=0.00,
-            duration=1.80,  # Adjust duration as needed for exact 90-degree alignment
+            left_speed=0.25,
+            right_speed=0.60,
+            duration=2.00,
         )
+
+        run_step(
+            "Step 3: Wide Left Turn3",
+            drive_differential_for_duration,
+            left_speed=0.25,
+            right_speed=0.60,
+            duration=2.50,
+        ) 
+
+        run_step(
+            "Step 3: Wide Left Turn4",
+            drive_differential_for_duration,
+            left_speed=0.25,
+            right_speed=0.60,
+            duration=3.00,
+        )               
+
+        # # Step 4: 90° Right Turn (Left motor at 0.45, Right motor at 0.0)
+        # run_step(
+        #     "Step 4: 90-Degree Right Turn",
+        #     drive_differential_for_duration,
+        #     left_speed=0.45,
+        #     right_speed=0.00,
+        #     duration=1.80,  # Adjust duration as needed for exact 90-degree alignment
+        # )
 
         log.info("All 4 steps completed successfully!")
 
