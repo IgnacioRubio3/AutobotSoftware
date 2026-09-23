@@ -299,18 +299,18 @@ def main() -> None:
         # )
 
         # Step 3: Wide Left Turn (Right motor moves faster than Left motor)
-        run_step(
-            "Step 3: Wide Left Turn1",
-            drive_differential_for_duration,
-            left_speed=0.40,
-            right_speed=0.60,
-            duration=3.00,
-        )
+        # run_step(
+        #     "Step 3: Wide Left Turn1",
+        #     drive_differential_for_duration,
+        #     left_speed=0.40,
+        #     right_speed=0.60,
+        #     duration=3.00,
+        # )
 
         run_step(
             "Step 3: Wide Left Turn2",
             drive_differential_for_duration,
-            left_speed=0.39,
+            left_speed=0.40,
             right_speed=0.61,
             duration=3.00,
         )
@@ -318,18 +318,10 @@ def main() -> None:
         run_step(
             "Step 3: Wide Left Turn3",
             drive_differential_for_duration,
-            left_speed=0.38,
-            right_speed=0.62,
+            left_speed=0.39,
+            right_speed=0.60,
             duration=3.00,
         ) 
-
-        run_step(
-            "Step 3: Wide Left Turn4",
-            drive_differential_for_duration,
-            left_speed=0.37,
-            right_speed=0.63,
-            duration=3.00,
-        )               
 
         # # Step 4: 90° Right Turn (Left motor at 0.45, Right motor at 0.0)
         # run_step(
