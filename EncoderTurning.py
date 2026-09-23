@@ -313,7 +313,7 @@ def main() -> None:
             drive_differential_for_duration,
             left_speed=0.45,
             right_speed=0.00,
-            duration=1.80, 
+            duration=1.40, 
         )
 
         run_step(
@@ -321,7 +321,7 @@ def main() -> None:
             drive_differential_for_duration,
             left_speed=0.45,
             right_speed=0.00,
-            duration=2.00, 
+            duration=1.50, 
         )
 
         run_step(
@@ -329,7 +329,7 @@ def main() -> None:
             drive_differential_for_duration,
             left_speed=0.45,
             right_speed=0.00,
-            duration=1.30, 
+            duration=1.60, 
         )
 
 
