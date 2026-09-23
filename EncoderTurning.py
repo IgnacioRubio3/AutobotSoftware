@@ -302,17 +302,17 @@ def main() -> None:
         run_step(
             "Step 3: Wide Left Turn1",
             drive_differential_for_duration,
-            left_speed=0.40,
+            left_speed=0.30,
             right_speed=0.60,
-            duration=1.62,
+            duration=3.00,
         )
 
         run_step(
             "Step 3: Wide Left Turn2",
             drive_differential_for_duration,
-            left_speed=0.40,
+            left_speed=0.35,
             right_speed=0.60,
-            duration=2.00,
+            duration=3.00,
         )
 
         run_step(
@@ -320,13 +320,13 @@ def main() -> None:
             drive_differential_for_duration,
             left_speed=0.40,
             right_speed=0.60,
-            duration=2.50,
+            duration=3.00,
         ) 
 
         run_step(
             "Step 3: Wide Left Turn4",
             drive_differential_for_duration,
-            left_speed=0.40,
+            left_speed=0.45,
             right_speed=0.60,
             duration=3.00,
         )               
