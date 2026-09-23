@@ -298,21 +298,21 @@ def main() -> None:
             duration=1.25,
         )
 
-        # Step 3: Right turn sequence (Left motor moves faster than Right motor)
+        # Step 3: Left Turn (Right motor moves faster than Left motor)
         run_step(
-            "Step 3: Right Turn",
+            "Step 3: Left Turn",
             drive_differential_for_duration,
-            left_speed=0.55,
-            right_speed=0.20,
+            left_speed=0.20,
+            right_speed=0.55,
             duration=1.62,
         )
 
-        # Step 4: Left turn sequence (Right motor moves faster than Left motor, wide arc)
+        # Step 4: Wide Right Turn (Left motor moves faster than Right motor, wide arc)
         run_step(
-            "Step 4: Wide Left Turn",
+            "Step 4: Wide Right Turn",
             drive_differential_for_duration,
-            left_speed=0.35,
-            right_speed=0.60,
+            left_speed=0.60,
+            right_speed=0.35,
             duration=2.50,
         )
 
