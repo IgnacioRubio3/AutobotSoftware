@@ -155,20 +155,21 @@ def init_motors(pi: pigpio.pi) -> None:
 def drive(pi: pigpio.pi, left_speed: float, right_speed: float) -> None:
     """
     Drive the robot with specified left and right motor speeds (-1.0 to 1.0).
+    Note: Direction control pin logic is inverted for both motors.
     """
     pi.write(_stby, 1)
 
-    # Left Motor
+    # Left Motor (Direction inverted)
     spd_l = int(max(0.0, min(1.0, abs(left_speed))) * 1000000)
     pi.hardware_PWM(_pwma, 1000, spd_l)
-    pi.write(_ain1, 1 if left_speed < 0 else 0)
-    pi.write(_ain2, 1 if left_speed > 0 else 0)
+    pi.write(_ain1, 1 if left_speed > 0 else 0)
+    pi.write(_ain2, 1 if left_speed < 0 else 0)
 
-    # Right Motor
+    # Right Motor (Direction inverted)
     spd_r = int(max(0.0, min(1.0, abs(right_speed))) * 1000000)
     pi.hardware_PWM(_pwmb, 1000, spd_r)
-    pi.write(_bin1, 1 if right_speed > 0 else 0)
-    pi.write(_bin2, 1 if right_speed < 0 else 0)
+    pi.write(_bin1, 1 if right_speed < 0 else 0)
+    pi.write(_bin2, 1 if right_speed > 0 else 0)
 
 
 # =============================================================================
